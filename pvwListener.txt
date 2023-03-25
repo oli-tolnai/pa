@@ -1,0 +1,28 @@
+import threading
+from pyatem import ATEM
+
+# create an instance of the ATEM class
+atem = ATEM(ip_address='192.168.1.10')
+
+# variable to store the current preview camera number
+current_pvw_camera = 0
+
+def check_preview_source():
+    global current_pvw_camera
+
+    while True:
+        # get the current preview source number
+        pvw_source = atem.video.preview_source
+
+        # check if the preview source has changed
+        if pvw_source != current_pvw_camera:
+            current_pvw_camera = pvw_source
+            print(f'Preview source changed to camera {current_pvw_camera}')
+
+def main():
+    # create and start a thread to continuously check the preview source
+    preview_thread = threading.Thread(target=check_preview_source)
+    preview_thread.start()
+
+if __name__ == '__main__':
+    main()

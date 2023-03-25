@@ -1,0 +1,34 @@
+import threading
+from pyatem import ATEM
+
+# Create an instance of the ATEM class
+atem = ATEM()
+
+# Connect to the ATEM switcher
+atem.connect('192.168.1.10')
+
+# Initialize a variable to store the current preview camera number
+current_pvw_camera = atem.video.program_input
+
+# Define a function that will run in a separate thread
+def check_pvw_camera():
+    global current_pvw_camera
+    while True:
+        # Get the current preview camera number
+        new_pvw_camera = atem.video.program_input
+        # Check if the preview camera has changed
+        if new_pvw_camera != current_pvw_camera:
+            # Update the current preview camera number
+            current_pvw_camera = new_pvw_camera
+            print(f'Preview camera changed to {current_pvw_camera}')
+
+# Create a new thread and run the check_pvw_camera function
+thread = threading.Thread(target=check_pvw_camera)
+thread.start()
+
+# Your main script can continue running here
+# ...
+
+# When you are finished, you can use the join() method to wait for the thread to finish
+thread.join()
+
